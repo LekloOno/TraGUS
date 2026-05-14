@@ -103,9 +103,9 @@ public abstract partial class UserSetting : Node
 	}
 
     /// <summary>
-    /// A gdscript-friendly adaptater of [`TryUpdateValue`].
+    /// A gdscript-friendly adaptater of <see cref="TryUpdateValue"/>.
     /// 
-    /// To mimic [`TryUpdateValue`], you can simply retrieve the setting value manually afterwards, through [`Value`] property.
+    /// To mimic <see cref="TryUpdateValue"/>, you can simply retrieve the setting value manually afterwards, through <see cref="Value"/> property.
     /// </summary>
     /// <param name="sender">The sender object that requesting the change.</param>
     /// <param name="value">The value to update the setting to.</param>
