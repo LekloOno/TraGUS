@@ -3,18 +3,38 @@ using Godot;
 
 namespace TraGUS;
 
+/// <summary>
+/// The User Settings Manager.
+/// Handles configuration files and stores and manage settings states at runtime.
+/// <br/>
+/// It should be an autoload, and be loaded before any <see cref="UserSetting"/>.
+/// </summary>
 [GlobalClass]
 public partial class UserSettingsServer : Node
 {
 	const string SettingsFilePath = "user://settings.ini";
-	const string DefaultSettingsFilePath = "res://config/user/default_settings.ini";
-	public ConfigFile Config {get; private set;}
-	public ConfigFile DefaultConfig {get; private set;}
+	const string DefaultSettingsFilePath = "res://addons/TraGUS/default_settings.ini";
+    /// <summary>
+    /// The autoload Instance of this setting.
+    /// </summary>
 	public static UserSettingsServer Instance {get; private set;}
 
     /// <summary>
-    /// The purpose of this hashmap is so that we can easily load from .ini config file. 
-    /// See `LoadSetting` for an example.
+    /// The config file edited on-the-go.
+    /// </summary>
+	public ConfigFile Config {get; private set;}
+    /// <summary>
+    /// The preloaded default config file.
+    /// </summary>
+	public ConfigFile DefaultConfig {get; private set;}
+
+    /// <summary>
+    /// The purpose of this hashmap is so that we can easily load from .ini config file. <br/>
+    /// <br/>
+    /// The inner hashmap references user settings by their .ini key. <br/>
+    /// The outer hashmap references the inner hashmap, by their .ini section. <br/>
+    /// <br/>
+    /// See <see cref="LoadSetting"/> for an example.
     /// </summary>
     private Dictionary<string, Dictionary<string, UserSetting>> _settings = [];
 
@@ -23,13 +43,15 @@ public partial class UserSettingsServer : Node
 	{
 		Instance = this;
 
-        if (Engine.IsEditorHint())
-            return;
-
 		Config = new();
 		DefaultConfig = new();
 
-		DefaultConfig.Load(DefaultSettingsFilePath);
+
+        if (FileAccess.FileExists(DefaultSettingsFilePath))
+		    DefaultConfig.Load(DefaultSettingsFilePath);
+        else
+            FileAccess.Open(DefaultSettingsFilePath, FileAccess.ModeFlags.Write);
+
 
 		if (FileAccess.FileExists(SettingsFilePath))
 			Config.Load(SettingsFilePath);
@@ -39,11 +61,17 @@ public partial class UserSettingsServer : Node
         Load();
 	}
 
+    /// <summary>
+    /// Writes the current modifications into the user's .ini config file.
+    /// </summary>
     public static void Apply()
 	{
 		Instance.Config.Save(SettingsFilePath);
 	}
 
+    /// <summary>
+    /// Aborts the current config modifications, and restores the active settings to the user's .ini config file. 
+    /// </summary>
 	public static void Abort()
 	{
 		if (!FileAccess.FileExists(SettingsFilePath))
@@ -53,6 +81,9 @@ public partial class UserSettingsServer : Node
         Load();
 	}
 
+    /// <summary>
+    /// Effectively loads the current state of the configuration into the run-time <see cref="UserSetting"/> settings.
+    /// </summary>
     public static void Load()
 	{
 		foreach (string sectionKey in Instance.Config.GetSections())
@@ -73,18 +104,14 @@ public partial class UserSettingsServer : Node
 			}
 	}
 
-    public static bool UnregisterSetting(UserSetting setting)
-    {
-        GD.Print("get section");
-        if (!Instance._settings.TryGetValue(setting.Section, out Dictionary<string, UserSetting> sectionSettings))
-            return false;
-            
-        GD.Print("unregister");
-
-        return sectionSettings.Remove(setting.Key, out _);
-    }
-
-    public static bool RegisterSetting(UserSetting setting)
+    /// <summary>
+    /// Tries to register the provided setting, using its <see cref="UserSetting.Section"/> and <see cref="UserSetting.Key"/>.
+    /// </summary>
+    /// <param name="setting">The <see cref="UserSetting"/> to register.</param>
+    /// <returns>
+    /// Whether the setting was successfully registered, that is, if a setting has already been registered under this section and key.
+    /// </returns>
+    public static bool TryRegisterSetting(UserSetting setting)
     {
         Dictionary<string, UserSetting> sectionSettings;
 
@@ -94,14 +121,25 @@ public partial class UserSettingsServer : Node
             Instance._settings.Add(setting.Section, sectionSettings);
         }
 
-        GD.Print("register");
         return sectionSettings.TryAdd(setting.Key, setting);
     }
 
-    public static bool RefreshSetting(UserSetting setting)
+    /// <summary>
+    /// Tries to unregister the provided setting, using its <see cref="UserSetting.Section"/> and <see cref="UserSetting.Key"/>.
+    /// </summary>
+    /// <param name="setting">The <see cref="UserSetting"/> to unregister.</param>
+    /// <returns>
+    /// Whether the setting was successfully unregistered. <br/>
+    /// It can fail if : <br/>
+    ///  - No setting is registered under this setting's section. <br/>
+    ///  - This setting is not registerd under its section. <br/>
+    /// </returns>
+    public static bool TryUnregisterSetting(UserSetting setting)
     {
-        UnregisterSetting(setting);
-        return RegisterSetting(setting);
+        if (!Instance._settings.TryGetValue(setting.Section, out Dictionary<string, UserSetting> sectionSettings))
+            return false;
+
+        return sectionSettings.Remove(setting.Key, out _);
     }
 
     /// <summary>
@@ -110,7 +148,7 @@ public partial class UserSettingsServer : Node
     /// <param name="sectionKey">The section key of the .ini entry.</param>
     /// <param name="settingKey">The setting key of the .ini entry.</param>
     /// <param name="value">The value to set the setting to.</param>
-    /// <param name="prevValue">If the provided value was not accepted by the setting, the value the setting remains at.</param>
+    /// <param name="effectiveValue">If the provided value was not accepted by the setting, the value the setting remains at.</param>
     /// <returns>
     /// The function returns true if the operation was successful. 
     ///
@@ -120,9 +158,9 @@ public partial class UserSettingsServer : Node
     ///     - The settingKey corresponds to no actual user settings within the provided section.
     ///     - The new setting value was rejected by the setting.
     /// </returns>
-    public static bool LoadSetting(string section, string settingKey, Variant value, out Variant prevValue)
+    public static bool LoadSetting(string section, string settingKey, Variant value, out Variant effectiveValue)
     {
-        prevValue = default;
+        effectiveValue = default;
 
         if (!Instance._settings.TryGetValue(section, out Dictionary<string, UserSetting> sectionSettings))
             return false;
@@ -130,9 +168,6 @@ public partial class UserSettingsServer : Node
         if (!sectionSettings.TryGetValue(settingKey, out UserSetting setting))
             return false;
 
-        if (setting == null)
-            return false;
-
-        return setting.TryUpdateValue(Instance, value, out prevValue);
+        return setting.TryUpdateValue(Instance, value, out effectiveValue);
     }
 }

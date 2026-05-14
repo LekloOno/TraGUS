@@ -94,12 +94,12 @@ public abstract partial class UserSetting : Node
 	{
 		Instance = this;
         Value = Default();
-        UserSettingsServer.RegisterSetting(this);
+        UserSettingsServer.TryRegisterSetting(this);
 	}
 
     public override void _ExitTree()
 	{
-        UserSettingsServer.UnregisterSetting(this);
+        UserSettingsServer.TryUnregisterSetting(this);
 	}
 
     /// <summary>
