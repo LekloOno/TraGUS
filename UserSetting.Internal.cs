@@ -12,9 +12,11 @@ public abstract partial class UserSetting : Node
     // |___|___|  /__|  \___  >__|  |___|  (____  /____/
     //          \/          \/           \/     \/      
     // =================================================
-    public override void _EnterTree()
+    public override sealed void _EnterTree()
 	{
 		Instance = this;
+
+        PreInitialize();
 
         UserSettingsServer.TryRegisterSetting(this);
 

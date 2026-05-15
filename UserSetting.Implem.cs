@@ -54,4 +54,10 @@ public abstract partial class UserSetting : Node
     /// Typically, if the concrete type of the Variant is not the expected one.
     /// </returns>
     protected abstract bool ProcessValue(Variant value, out Variant effectiveValue);
+
+    /// <summary>
+    /// Called right after the singleton has been initalized, and right before it is registered,
+    /// or its fields are initialized. Allows for some further custom initialization. 
+    /// </summary>
+    protected virtual void PreInitialize() {}
 }
