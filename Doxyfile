@@ -1,0 +1,49 @@
+# Doxyfile 1.15.0
+DOXYFILE_ENCODING      = UTF-8
+
+# Project info
+PROJECT_NAME           = "TraGUS"
+PROJECT_BRIEF          = "Godot plugin for user settings"
+
+# Input
+INPUT                  = . _docs
+FILE_PATTERNS          = *.cs *.md
+RECURSIVE              = YES
+IMAGE_PATH = _docs/res
+
+# Language
+OPTIMIZE_OUTPUT_FOR_CSHARP = YES
+HIDE_SCOPE_NAMES 	= YES
+FULL_PATH_NAMES 	= NO
+
+# Extract comments
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = YES
+
+# Treat warnings as optional
+WARN_IF_UNDOCUMENTED   = NO
+WARN_NO_PARAMDOC       = NO
+
+# HTML output
+OUTPUT_DIRECTORY       = docs
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+GENERATE_TREEVIEW      = YES
+SEPARATE_MEMBER_PAGES  = YES
+ALWAYS_DETAILED_SEC    = YES
+
+# Optional class diagrams
+HAVE_DOT               = YES
+CLASS_GRAPH            = YES
+COLLABORATION_GRAPH    = YES
+DOT_IMAGE_FORMAT       = svg
+
+# Style
+HTML_EXTRA_STYLESHEET  = doxygen-awesome/doxygen-awesome.css
+
+# Markdown
+MARKDOWN_SUPPORT = YES
+AUTOLINK_SUPPORT = YES
+USE_MDFILE_AS_MAINPAGE = README.md
