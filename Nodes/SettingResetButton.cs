@@ -67,11 +67,11 @@ public partial class SettingResetButton : BaseButton
 	}
 
 	private void OnPressed() =>
-		_setting.Reset();
+		_setting?.Reset();
 
 	// Lazy string comparison ..
 	private void Update(GodotObject _, Variant value) =>
-		Visible = value.ToString() != _setting.GdDefault().ToString();
+		Visible = value.ToString() != _setting?.GdDefault().ToString();
 
 	public override void _Ready()
 	{
