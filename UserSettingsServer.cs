@@ -57,9 +57,12 @@ public partial class UserSettingsServer : Node
 			Config.Load(SettingsFilePath);
 		else
 			Config.Load(DefaultSettingsFilePath);
-
-        Load();
 	}
+
+    public override void _Ready()
+    {
+        Load();
+    }
 
     /// <summary>
     /// Writes the current modifications into the user's .ini config file.
