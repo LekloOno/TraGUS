@@ -141,4 +141,16 @@ public abstract partial class UserSetting : Node
 
         return processed;
     }
+
+    /// <summary>
+    /// Tries to reset the setting to the value specified in default_settings.ini.
+    /// </summary>
+    /// <returns>
+    /// Whether the setting could be reset.
+    /// It can fail:
+    /// - If the default_settings.ini did not contain an entry for this setting, and the setting can't handle <see cref="default"/>.
+    /// - If the default_settings.ini entry values is rejected by the setting.
+    /// </returns>
+    public bool Reset() =>
+        UserSettingsServer.Reset(this);
 }

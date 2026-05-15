@@ -64,7 +64,7 @@ public partial class UserSettingsServer : Node
     /// <summary>
     /// Writes the current modifications into the user's .ini config file.
     /// </summary>
-    public static void Apply()
+    public static void Save()
 	{
 		Instance.Config.Save(SettingsFilePath);
 	}
@@ -169,5 +169,52 @@ public partial class UserSettingsServer : Node
             return false;
 
         return setting.TryUpdateValue(Instance, value, out effectiveValue);
+    }
+
+    /// <summary>
+    /// Tries to reset the setting to the value specified in default_settings.ini, if present.
+    /// <br/>
+    /// This DOES NOT apply the changes to the user's config file.
+    /// For that, you must still call <see cref="Save"/> afterwards.
+    /// </summary>
+    /// <param name="setting">The setting to reset.</param>
+    /// <returns>
+    /// Whether the setting could be reset.
+    /// It can fail:
+    /// - If the default_settings.ini did not contain an entry for this setting, and the setting can't handle <see cref="default"/>.
+    /// - If the default_settings.ini entry values is rejected by the setting.
+    /// </returns>
+    public static bool Reset(UserSetting setting)
+    {
+        var value = Instance.DefaultConfig.GetValue(setting.Section, setting.Key);
+        return setting.TryUpdateValue(Instance, value, out _);
+    }
+
+    /// <summary>
+    /// Tries to reset all the settings from the specified section to the values specified in default_settings.ini.
+    /// <br/>
+    /// This DOES NOT apply the changes to the user's config file.
+    /// For that, you must still call <see cref="Save"/> afterwards.
+    /// </summary>
+    /// <param name="section">The section to reset.</param>
+    public static void ResetSection(string section)
+    {
+        if (!Instance._settings.TryGetValue(section, out Dictionary<string, UserSetting> settings))
+            return;
+
+        foreach (UserSetting setting in settings.Values)
+            Reset(setting);
+    }
+
+    /// <summary>
+    /// Tries to reset all the settings to the value specified in default_settings.ini.
+    /// <br/>
+    /// This DOES NOT apply the changes to the user's config file.
+    /// For that, you must still call <see cref="Save"/> afterwards.
+    /// </summary>
+    public static void ResetAll()
+    {
+        foreach (string section in Instance._settings.Keys)
+            ResetSection(section);
     }
 }
