@@ -59,11 +59,6 @@ public partial class UserSettingsServer : Node
 			Config.Load(DefaultSettingsFilePath);
 	}
 
-    public override void _Ready()
-    {
-        Load();
-    }
-
     /// <summary>
     /// Writes the current modifications into the user's .ini config file.
     /// </summary>
@@ -93,19 +88,71 @@ public partial class UserSettingsServer : Node
 			foreach (string settingKey in Instance.Config.GetSectionKeys(sectionKey))
 			{
 				var value = Instance.Config.GetValue(sectionKey, settingKey);
-                if (!LoadSetting(sectionKey, settingKey, value, out Variant prevValue))
-                {
-					GD.PushWarning(
-						"Could not load config value for:" +
-						"\n - section: " + sectionKey +
-						"\n - setting: " + settingKey
-					);
 
-                    if (!prevValue.Equals(default))
-                        GD.PushWarning("\nValue remained: " + prevValue);
+                LoadResult result = LoadSetting(sectionKey, settingKey, value, out Variant effectiveValue);
+                if (result == LoadResult.Success)
+                    continue;
+
+                string warning = 
+                    "Could not load config value for:" +
+                    "\n - section: " + sectionKey +
+                    "\n - setting: " + settingKey + "\n";
+
+                switch (result)
+                {
+                    case LoadResult.SectionNotFound:
+                        warning += "---section `" + sectionKey + "` is not registered";
+                        break;
+                    case LoadResult.KeyNotFound:
+                        warning += "---key `" + settingKey + "` is not registered";
+                        break;
+                    case LoadResult.ValueRejected:
+                        warning += "---value `" + value + "` was rejected." +
+                        "\n  -Falling back to " + effectiveValue;
+                        break;
                 }
+
+                GD.PushWarning(warning);
 			}
 	}
+
+    /// <summary>
+    /// Tries to retrieve the saved default value of this setting from `default_settings.ini`
+    /// </summary>
+    /// <param name="setting">The setting to initialize.</param>
+    /// <param name="value">The retrieved default value for this setting.</param>
+    /// <returns>
+    /// Whether the default config file contained a corresponding (not necessarily valid) entry.
+    /// </returns>
+    public static bool Default(UserSetting setting, out Variant value)
+    {
+        if (!Instance.DefaultConfig.HasSectionKey(setting.Section, setting.Key))
+        {
+            value = default;
+            return false;
+        }
+
+        value = Instance.DefaultConfig.GetValue(setting.Section, setting.Key);
+        return true;
+    }
+
+    /// <summary>
+    /// Tries to retrieve the initial value of the setting, using the user's `.ini` config file if possible
+    /// and the `default_settings.ini` otherwise.
+    /// </summary>
+    /// <param name="setting">The setting to initialize.</param>
+    /// <param name="value">The retrieved initial value for this setting.</param>
+    /// <returns>
+    /// Whether either the user's or default config file contained a corresponding (not necessarily valid) entry. 
+    /// </returns>
+    public static bool Init(UserSetting setting, out Variant value)
+    {
+        if (!Instance.Config.HasSectionKey(setting.Section, setting.Key))
+            return Default(setting, out value);
+
+        value = Instance.Config.GetValue(setting.Section, setting.Key);
+        return true;
+    }
 
     /// <summary>
     /// Tries to register the provided setting, using its <see cref="UserSetting.Section"/> and <see cref="UserSetting.Key"/>.
@@ -153,25 +200,54 @@ public partial class UserSettingsServer : Node
     /// <param name="value">The value to set the setting to.</param>
     /// <param name="effectiveValue">If the provided value was not accepted by the setting, the value the setting remains at.</param>
     /// <returns>
-    /// The function returns true if the operation was successful. 
-    ///
-    /// It returns false if either -
+    /// The function returns a LoadResult, corresponding to either a success, or one of the possible failures -
     ///     - The sectionKey corresponds to no actual user settings section.
-    ///     - No setting is registered under the corresponding user settings section.
     ///     - The settingKey corresponds to no actual user settings within the provided section.
     ///     - The new setting value was rejected by the setting.
     /// </returns>
-    public static bool LoadSetting(string section, string settingKey, Variant value, out Variant effectiveValue)
+    private static LoadResult LoadSetting(string section, string settingKey, Variant value, out Variant effectiveValue)
     {
         effectiveValue = default;
 
         if (!Instance._settings.TryGetValue(section, out Dictionary<string, UserSetting> sectionSettings))
-            return false;
+            return LoadResult.SectionNotFound;
 
         if (!sectionSettings.TryGetValue(settingKey, out UserSetting setting))
-            return false;
+            return LoadResult.KeyNotFound;
 
-        return setting.TryUpdateValue(Instance, value, out effectiveValue);
+        if (setting.TryUpdateValue(Instance, value, out effectiveValue))
+            return LoadResult.Success;
+
+        return LoadResult.ValueRejected;
+    }
+
+    private enum LoadResult
+    {
+        Success,
+        SectionNotFound,
+        KeyNotFound,
+        ValueRejected,
+    }
+
+    /// <summary>
+    /// Tries to load the provided config.ini entry in the settings server.
+    /// </summary>
+    /// <param name="sectionKey">The section key of the .ini entry.</param>
+    /// <param name="settingKey">The setting key of the .ini entry.</param>
+    /// <param name="value">The value to set the setting to.</param>
+    /// <param name="effectiveValue">If the provided value was not accepted by the setting, the value the setting remains at.</param>
+    /// <returns>
+    /// The function returns true if the operation was successful. 
+    ///
+    /// It returns false if either -
+    ///     - The sectionKey corresponds to no actual user settings section.
+    ///     - The settingKey corresponds to no actual user settings within the provided section.
+    ///     - The new setting value was rejected by the setting.
+    /// </returns>
+    public static bool TryLoadSetting(string section, string settingKey, Variant value, out Variant effectiveValue)
+    {
+        LoadResult result = LoadSetting(section, settingKey, value, out effectiveValue);
+        return result == LoadResult.Success;
     }
 
     /// <summary>

@@ -63,9 +63,10 @@ public abstract partial class UserSetting : Node
 
     /// <summary>
     /// A value to be used if the value can't be initialized from .ini config files.
+    /// You can leave it as is, or specify a fallback behavior if needed.
     /// </summary>
     /// <returns></returns>
-    public abstract Variant Default();
+    public virtual Variant Default() => default;
 
     /// <summary>
     /// Defines the underlying behavior tied to this setting, provided a new value to be set. <br/>
@@ -93,8 +94,19 @@ public abstract partial class UserSetting : Node
     public override void _EnterTree()
 	{
 		Instance = this;
-        Value = Default();
+
         UserSettingsServer.TryRegisterSetting(this);
+
+        Variant initValue;
+        if (!UserSettingsServer.Init(this, out initValue))
+            initValue = Default();
+
+        if (!ProcessValue(initValue, out Variant effectiveValue))
+            GD.PushWarning("The initial value (" + initValue +
+                ")for [section: " + Section + ", key: " + Key + "] was rejected.\n" +
+                "- Falling back to: " + effectiveValue);
+
+        Value = effectiveValue;
 	}
 
     public override void _ExitTree()
@@ -128,17 +140,15 @@ public abstract partial class UserSetting : Node
     /// </returns>
     public bool TryUpdateValue(GodotObject sender, Variant value, out Variant effectiveValue)
     {
-        Variant prevValue = Value;
-
         bool processed = ProcessValue(value, out effectiveValue);
         Value = effectiveValue;
-        
-        if (!prevValue.Equals(effectiveValue))
-        {
-            UserSettingsServer.Instance.Config.SetValue(Section.ToSnakeCase(), Key, Value);
-            EmitSignal(SignalName.Changed, sender, value);
-        }
 
+        // Comparing Variant values is a bit of hastle, I don't think doing all the
+        // necessary type checks is worth the optimization of not
+        // triggering edit and signal fire when the inherent value has not changed.
+        UserSettingsServer.Instance.Config.SetValue(Section.ToSnakeCase(), Key, Value);
+        EmitSignal(SignalName.Changed, sender, value);
+        
         return processed;
     }
 
