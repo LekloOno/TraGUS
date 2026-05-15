@@ -18,8 +18,8 @@ Tragus is a neat piercing, but now, its is also an easy to use plugin to handle 
 - [Adding new user settings](#adding-new-user-settings)
   - [Implement UserSetting](#implement-usersetting)
     - [Section \& Key](#section--key)
-    - [Default](#default)
     - [ProcessValue](#processvalue)
+    - [(optionnal) Default](#optionnal-default)
   - [Register the autoload](#register-the-autoload)
     - [⚠️ Now, very important ! (reminder)](#️-now-very-important--reminder)
 - [Binding this to the UI](#binding-this-to-the-ui)
@@ -67,18 +67,18 @@ The workflow using TraGUS is pretty simple.
 
 ## User configuration file
 
-On game startup, the [UserSettingsServer](https://github.com/LekloOno/TraGUS/blob/main/UserSettingsServer.cs) tries to load the user's `.ini` config file that contains its saved settings, into the registered [UserSettings](#creating-user-settings).
+On game startup, each [UserSettings](https://github.com/LekloOno/TraGUS/blob/main/UserSetting.cs) registers itself automatically, and tries to initialize with either the user's `.ini` config file, or the `default_settings.ini` if the user's don't specify it.
 
 To save the user's configuration in such file, see [Taking effects](#taking-effects-to-the-users-config-file).
 
 ## Default configuration file
 
-For any missing setting in it (or simply if there's no user config file at all), the server will instead load from `res://addons/TraGUS/default_settings.ini`.
-
-You can create that file and edit it freely, to setup the default configuration you wish for.
+You can create that file and edit it freely unde `res://addons/TraGUS/default_settings.ini`, to setup the default configuration you wish for.
 
 Make sure the `section` names and `setting_keys` you write in it do correspond to the `Section` and `Key` field of your [UserSetting](#creating-user-settings) implementations.
 
+> You can optionnally specify a last resort default fall back in each [UserSetting](#optionnal-default) implementation.  
+> This would notably allow you to, instead of writing the whole `default_settings.ini` by hand, simply run your game once and let **UserSettingsServer** initialize the file, then only edit the values in it.
 
 ## Creating user settings
 
@@ -143,14 +143,6 @@ This setting for example, will be seen as follows in the `.ini` file.
 setting_key=#...
 ```
 
-### Default
-```cs
-public override Variant Default() => //...;
-```
-Makes sure the setting is always initialized to a valid value, even if the none of the user's or default `.ini` config file contains a valid entry for it.
-
-If you really trust your `default_settings.ini`, you can simply let it return `default`.
-
 ### ProcessValue
 ```cs
 protected override bool ProcessValue(Variant value, out Variant effectiveValue)
@@ -159,6 +151,15 @@ protected override bool ProcessValue(Variant value, out Variant effectiveValue)
 }
 ```
 Holds the actual behavior of the setting, like, changing the size of the window, the engine's frame rate, the color of the UI etc.
+
+### (optionnal) Default
+```cs
+public override Variant Default() => //...;
+```
+Is not required, you can optionnaly specify it to make sure the setting is always initialized to a valid value, even if none of the user's nor default `.ini` config file contains a valid entry for it.
+
+If you really trust your `default_settings.ini`, you don't need to implement it.
+
 
 ## Register the autoload
 
