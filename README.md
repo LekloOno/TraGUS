@@ -19,7 +19,7 @@ Tragus is a neat piercing, but now, its is also an easy to use plugin to handle 
   - [Implement UserSetting](#implement-usersetting)
     - [Section \& Key](#section--key)
     - [ProcessValue](#processvalue)
-    - [(optionnal) Default](#optionnal-default)
+    - [(optionnal) DefaultFallBack](#optionnal-defaultfallback)
   - [Register the autoload](#register-the-autoload)
     - [⚠️ Now, very important ! (reminder)](#️-now-very-important--reminder)
 - [Binding this to the UI](#binding-this-to-the-ui)
@@ -152,9 +152,9 @@ protected override bool ProcessValue(Variant value, out Variant effectiveValue)
 ```
 Holds the actual behavior of the setting, like, changing the size of the window, the engine's frame rate, the color of the UI etc.
 
-### (optionnal) Default
+### (optionnal) DefaultFallBack
 ```cs
-public override Variant Default() => //...;
+public override Variant DefaultFallBack() => //...;
 ```
 Is not required, you can optionnaly specify it to make sure the setting is always initialized to a valid value, even if none of the user's nor default `.ini` config file contains a valid entry for it.
 

@@ -7,13 +7,12 @@ using TraGUS;
 /// 
 /// To work properly, you must add it as an autoload, and make sure it loads after the <see cref="UserSettingsServer"/> (that is, it is lower in the autoloads list).
 /// </summary>
-[GlobalClass]
 public partial class ExampleResolutionUserSetting : UserSetting
 {
     public override string Section => "video";
     public override string Key => "resolution";
 
-    public override Variant Default() =>
+    public override Variant DefaultFallBack() =>
         new Vector2I(1920, 1080);
 
     protected override bool ProcessValue(Variant value, out Variant effectiveValue)
