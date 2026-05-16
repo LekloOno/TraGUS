@@ -20,6 +20,7 @@ Tragus is a neat piercing, but now, its is also an easy to use plugin to handle 
     - [Section \& Key](#section--key)
     - [ProcessValue](#processvalue)
     - [(optionnal) DefaultFallBack](#optionnal-defaultfallback)
+    - [Advanced](#advanced)
   - [Register the autoload](#register-the-autoload)
     - [⚠️ Now, very important ! (reminder)](#️-now-very-important--reminder)
 - [Binding this to the UI](#binding-this-to-the-ui)
@@ -160,6 +161,19 @@ Is not required, you can optionnaly specify it to make sure the setting is alway
 
 If you really trust your `tragus_default_settings.ini`, you don't need to implement it.
 
+### Advanced
+
+Besides, there's a couple of methods you can overload for advanced behaviors.
+```cs
+protected virtual void PreInitialize() {}
+```
+Is called right before the the setting is registered, allows for some further initialization behavior, like loading some resources.
+
+```cs
+public virtual Variant Serialized(Variant value) { /*...*/ }
+public virtual bool TryDeserialize(Variant value, out Variant deserialized) { /*...*/ }
+```
+Allow to specify some advanced de/serialization mechanisms, if you use more complex settings values, like Arrays.
 
 ## Register the autoload
 
