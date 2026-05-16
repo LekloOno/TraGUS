@@ -12,7 +12,7 @@ namespace TraGUS;
 public partial class UserSettingsServer : Node
 {
 	const string SettingsFilePath = "user://settings.ini";
-	const string DefaultSettingsFilePath = "res://addons/TraGUS/default_settings.ini";
+	const string DefaultSettingsFilePath = "res://tragus_default_settings.ini";
     /// <summary>
     /// The autoload Instance of this setting.
     /// </summary>

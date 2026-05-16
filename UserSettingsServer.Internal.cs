@@ -34,7 +34,7 @@ public partial class UserSettingsServer : Node
 	}
 
 	/// <summary>
-	/// Tries to retrieve the saved default value of this setting from `default_settings.ini`
+	/// Tries to retrieve the saved default value of this setting from `tragus_default_settings.ini`
 	/// </summary>
 	/// <param name="setting">The setting to initialize.</param>
 	/// <param name="value">The retrieved default value for this setting.</param>
@@ -55,7 +55,7 @@ public partial class UserSettingsServer : Node
 
 	/// <summary>
 	/// Tries to retrieve the initial value of the setting, using the user's `.ini` config file if possible
-	/// and the `default_settings.ini` otherwise.
+	/// and the `tragus_default_settings.ini` otherwise.
 	/// </summary>
 	/// <param name="setting">The setting to initialize.</param>
 	/// <param name="value">The retrieved initial value for this setting.</param>
@@ -159,7 +159,7 @@ public partial class UserSettingsServer : Node
 
 
 	/// <summary>
-	/// Tries to reset the setting to the value specified in default_settings.ini, if present.
+	/// Tries to reset the setting to the value specified in tragus_default_settings.ini, if present.
 	/// <br/>
 	/// This DOES NOT apply the changes to the user's config file.
 	/// For that, you must still call <see cref="Save"/> afterwards.
@@ -168,8 +168,8 @@ public partial class UserSettingsServer : Node
 	/// <returns>
 	/// Whether the setting could be reset.
 	/// It can fail:
-	/// - If the default_settings.ini did not contain an entry for this setting, and the setting can't handle <see cref="default"/>.
-	/// - If the default_settings.ini entry values is rejected by the setting.
+	/// - If the tragus_default_settings.ini did not contain an entry for this setting, and the setting can't handle <see cref="default"/>.
+	/// - If the tragus_default_settings.ini entry values is rejected by the setting.
 	/// </returns>
 	public static bool Reset(UserSetting setting)
 	{

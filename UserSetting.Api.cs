@@ -53,31 +53,31 @@ public abstract partial class UserSetting : Node
     }
 
     /// <summary>
-    /// Tries to reset the setting to the value specified in default_settings.ini.
+    /// Tries to reset the setting to the value specified in tragus_default_settings.ini.
     /// </summary>
     /// <returns>
     /// Whether the setting could be reset.
     /// It can fail:
-    /// - If the default_settings.ini did not contain an entry for this setting, and the setting can't handle <see cref="default"/>.
-    /// - If the default_settings.ini entry values is rejected by the setting.
+    /// - If the tragus_default_settings.ini did not contain an entry for this setting, and the setting can't handle <see cref="default"/>.
+    /// - If the tragus_default_settings.ini entry values is rejected by the setting.
     /// </returns>
     public bool Reset() =>
         UserSettingsServer.Reset(this);
 
     /// <summary>
-    /// Tries to retrieve the default value of this setting from `default_settings.ini`.
+    /// Tries to retrieve the default value of this setting from `tragus_default_settings.ini`.
     /// </summary>
     /// <param name="value">The retrieved value.</param>
-    /// <returns>Whether a corresponding entry in `default_settings.ini` was found.</returns>
+    /// <returns>Whether a corresponding entry in `tragus_default_settings.ini` was found.</returns>
     public bool Default(out Variant value) =>
         UserSettingsServer.Default(this, out value);
 
     /// <summary>
     /// A gdscript compatible adaptater of <see cref="Default"/>.
-    /// It falls back to the setting DefaultFallBack() if no corresponding entry is found in `default_settings.ini`.
+    /// It falls back to the setting DefaultFallBack() if no corresponding entry is found in `tragus_default_settings.ini`.
     /// </summary>
     /// <returns>
-    /// The corresponding entry in `default_settings.ini`, or the default fall back if none was found.
+    /// The corresponding entry in `tragus_default_settings.ini`, or the default fall back if none was found.
     /// </returns>
     public Variant GdDefault()
     {

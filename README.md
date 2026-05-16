@@ -41,7 +41,7 @@ The plugin is based on :
 The plugin allows, auto-magically :
 - User settings loading using `.ini` files - [brief](#user-configuration-file)
 - User settings persistence using `.ini` files - [brief](#taking-effects-to-the-users-config-file)
-- Default settings setup using a `default_setting.ini` file - [brief](#default-configuration-file)
+- Default settings setup using a `tragus_default_settings.ini` file - [brief](#default-configuration-file)
 - An easy and straightforward way to add new user settings. [brief](#creating-user-settings)
 - Runtime and responsive edition of settings - [brief](#editing-user-settings)
 - An even easier way to bind UI to edit such settings, and keep multiple sources synchronized. [brief](#binding-this-to-the-ui)
@@ -54,7 +54,7 @@ However, it's sometimes easier to learn by example ! So I added a quick one in [
 
 - [ExampleResolutionUserSetting](https://github.com/LekloOno/TraGUS/blob/main/Examples/ExampleResolutionUserSetting.cs) defines a user setting for the game's rendering resolution.
 - [example_resolution_picker](https://github.com/LekloOno/TraGUS/blob/main/Examples/example_resolution_picker.gd) shows how to make a UI element that allows the player to edit this setting.
-- [example_resolution_reset_button](https://github.com/LekloOno/TraGUS/blob/main/Examples/example_resolution_reset_button.gd) shows how to make a little button that resets the setting to the value specified in `default_settings.ini`.
+- [example_resolution_reset_button](https://github.com/LekloOno/TraGUS/blob/main/Examples/example_resolution_reset_button.gd) shows how to make a little button that resets the setting to the value specified in `tragus_default_settings.ini`.
 - [example_apply_button](https://github.com/LekloOno/TraGUS/blob/main/Examples/example_apply_button.gd) shows how to make a button that saves all currently edited settings to the user's `.ini` config file.
 - [example_abort_button](https://github.com/LekloOno/TraGUS/blob/main/Examples/example_abort_button.gd) shows how to make a button that aborts the currently edited settings, and resets them to the user's `.ini` config file.
 
@@ -67,18 +67,18 @@ The workflow using TraGUS is pretty simple.
 
 ## User configuration file
 
-On game startup, each [UserSettings](https://github.com/LekloOno/TraGUS/blob/main/UserSetting.cs) registers itself automatically, and tries to initialize with either the user's `.ini` config file, or the `default_settings.ini` if the user's don't specify it.
+On game startup, each [UserSettings](https://github.com/LekloOno/TraGUS/blob/main/UserSetting.cs) registers itself automatically, and tries to initialize with either the user's `.ini` config file, or the `tragus_default_settings.ini` if the user's don't specify it.
 
 To save the user's configuration in such file, see [Taking effects](#taking-effects-to-the-users-config-file).
 
 ## Default configuration file
 
-You can create that file and edit it freely unde `res://addons/TraGUS/default_settings.ini`, to setup the default configuration you wish for.
+You can create that file and edit it freely unde `res://tragus_default_settings.ini`, to setup the default configuration you wish for.
 
 Make sure the `section` names and `setting_keys` you write in it do correspond to the `Section` and `Key` field of your [UserSetting](#creating-user-settings) implementations.
 
 > You can optionnally specify a last resort default fall back in each [UserSetting](#optionnal-default) implementation.  
-> This would notably allow you to, instead of writing the whole `default_settings.ini` by hand, simply run your game once and let **UserSettingsServer** initialize the file, then only edit the values in it.
+> This would notably allow you to, instead of writing the whole `tragus_default_settings.ini` by hand, simply run your game once and let **UserSettingsServer** initialize the file, then only edit the values in it.
 
 ## Creating user settings
 
@@ -94,7 +94,7 @@ When you edit it, it takes effect immediately, but in cache. The setting isn't y
 
 - `MyUserSetting.Changed` signal is emitted when the value of the setting changes. The first argument is the node that requested this change, the second is the new value of the setting. This can be used to stay in-sync accross multiple edit sources of the same setting.
 - `MyUserSetting.TryUpdateValue/GdTryUpdateValue` sends a request to change the setting. The first argument is the node requesting this change, the second is the requested value. It returns false if the request was rejected.
-- `MyUserSetting.Reset` sends a request to set the setting to the corresponding entry in `default_settings.ini`, and returns false if the request was rejected.
+- `MyUserSetting.Reset` sends a request to set the setting to the corresponding entry in `tragus_default_settings.ini`, and returns false if the request was rejected.
 
 ## Taking effects to the user's config file
 
@@ -102,7 +102,7 @@ The [UserSettingsServer](https://github.com/LekloOno/TraGUS/blob/main/UserSettin
 
 - `UserSettingsServer.Save` writes the current state of all registered `UserSetting` to the user's config file.
 - `UserSettingsServer.Abort` aborts the current state of all registered `UserSetting`, and sets them back to the user's config file.
-- `UserSettingsServer.Reset(section)` and `UseSettingsServer.ResetAll()` are little helpers built on top of `UserSetting.Reset` to respectively reset all registered settings under a given section, or simply all registered settings, to the corresponding value in `default_settings.ini`.
+- `UserSettingsServer.Reset(section)` and `UseSettingsServer.ResetAll()` are little helpers built on top of `UserSetting.Reset` to respectively reset all registered settings under a given section, or simply all registered settings, to the corresponding value in `tragus_default_settings.ini`.
 
 
 
@@ -158,7 +158,7 @@ public override Variant DefaultFallBack() => //...;
 ```
 Is not required, you can optionnaly specify it to make sure the setting is always initialized to a valid value, even if none of the user's nor default `.ini` config file contains a valid entry for it.
 
-If you really trust your `default_settings.ini`, you don't need to implement it.
+If you really trust your `tragus_default_settings.ini`, you don't need to implement it.
 
 
 ## Register the autoload
@@ -221,4 +221,4 @@ func _on_button_pressed() -> void:
 
 And that's it ! You can have as many ways to edit the same setting, and they'll stay synchronized !
 
-Additionnaly, you can also reset a setting to a default value you have set in `default_settings.ini` using `SuperNeatSetting.Reset()`.
+Additionnaly, you can also reset a setting to a default value you have set in `tragus_default_settings.ini` using `SuperNeatSetting.Reset()`.

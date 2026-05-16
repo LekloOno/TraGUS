@@ -94,7 +94,7 @@ public partial class UserSettingsServer : Node
     }
 
     /// <summary>
-    /// Tries to reset all the settings from the specified section to the values specified in default_settings.ini.
+    /// Tries to reset all the settings from the specified section to the values specified in tragus_default_settings.ini.
     /// <br/>
     /// This DOES NOT apply the changes to the user's config file.
     /// For that, you must still call <see cref="Save"/> afterwards.
@@ -110,7 +110,7 @@ public partial class UserSettingsServer : Node
     }
 
     /// <summary>
-    /// Tries to reset all the settings to the value specified in default_settings.ini.
+    /// Tries to reset all the settings to the value specified in tragus_default_settings.ini.
     /// <br/>
     /// This DOES NOT apply the changes to the user's config file.
     /// For that, you must still call <see cref="Save"/> afterwards.
