@@ -21,7 +21,8 @@ public abstract partial class UserSetting : Node
 		UserSettingsServer.TryRegisterSetting(this);
 
 		Variant initValue;
-		if (!UserSettingsServer.Init(this, out initValue))
+		if (!UserSettingsServer.Init(this, out initValue)
+			|| !TryDeserialize(initValue, out initValue))
 			initValue = DefaultFallBack();
 
 		if (!ProcessValue(initValue, out Variant effectiveValue))
