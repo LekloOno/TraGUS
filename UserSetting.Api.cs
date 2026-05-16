@@ -43,10 +43,15 @@ public abstract partial class UserSetting : Node
         bool processed = ProcessValue(value, out effectiveValue);
         Value = effectiveValue;
 
-        // Comparing Variant values is a bit of hastle, I don't think doing all the
-        // necessary type checks is worth the optimization of not
-        // triggering edit and signal fire when the inherent value has not changed.
-        UserSettingsServer.Instance.Config.SetValue(Section.ToSnakeCase(), Key, Value);
+        // Comparing Variant values can be a bit tideous, I don't think doing
+        // the necessary type checks is worth the optimization of not triggering
+        // edit and signal fire when the inherent value has not changed.
+        UserSettingsServer.Instance.Config.SetValue(
+            Section.ToSnakeCase(),
+            Key,
+            Serialized(Value)
+        );
+
         EmitSignal(SignalName.Changed, sender, value);
         
         return processed;

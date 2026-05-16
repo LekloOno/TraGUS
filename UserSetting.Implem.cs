@@ -60,4 +60,29 @@ public abstract partial class UserSetting : Node
     /// or its fields are initialized. Allows for some further custom initialization. 
     /// </summary>
     protected virtual void PreInitialize() {}
+
+    /// <summary>
+    /// Allows to define some custom serialization behavior, for more complex settings type, lists, etc.
+    /// If you want to ensure a specific format. <br/>
+    /// 
+    /// It simply lets godot config system handle the serialization if not specified.
+    /// </summary>
+    /// <param name="value">The value to serialize.</param>
+    /// <returns>The serialized output.</returns>
+    public virtual Variant Serialized(Variant value) => value;
+
+    /// <summary>
+    /// Allows to define some custom deserialization behavior, for more complex settings type, lists, etc.
+    /// If you want to ensure a specific format. <br/>
+    /// 
+    /// It simply yields the value back if not specified.
+    /// </summary>
+    /// <param name="value">The value to deserialize.</param>
+    /// <param name="deserialized">The deserialized output, if successfull.</param>
+    /// <returns>Whether the input value could be deserialized.</returns>
+    public virtual bool TryDeserialize(Variant value, out Variant deserialized)
+    {
+        deserialized = value;
+        return true;
+    }
 }

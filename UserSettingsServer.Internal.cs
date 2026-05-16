@@ -132,7 +132,10 @@ public partial class UserSettingsServer : Node
 		if (!sectionSettings.TryGetValue(key, out UserSetting setting))
 			return LoadResult.KeyNotFound;
 
-		if (setting.TryUpdateValue(Instance, value, out effectiveValue))
+		if (!setting.TryDeserialize(value, out Variant deserialized))
+			return LoadResult.ValueRejected;
+
+		if (setting.TryUpdateValue(Instance, deserialized, out effectiveValue))
 			return LoadResult.Success;
 
 		return LoadResult.ValueRejected;
