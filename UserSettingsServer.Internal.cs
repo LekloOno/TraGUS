@@ -20,12 +20,8 @@ public partial class UserSettingsServer : Node
 		Config = new();
 		DefaultConfig = new();
 
-
 		if (FileAccess.FileExists(DefaultSettingsFilePath))
 			DefaultConfig.Load(DefaultSettingsFilePath);
-		else
-			FileAccess.Open(DefaultSettingsFilePath, FileAccess.ModeFlags.Write);
-
 
 		if (FileAccess.FileExists(SettingsFilePath))
 			Config.Load(SettingsFilePath);
