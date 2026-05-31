@@ -62,6 +62,7 @@ public partial class SettingLineEdit : LineEdit, ISettingUiWrapper
 
 	private void OnTextChanged(string newText)
 	{
+		newText = newText.Trim();
 		Variant newValue = FormatedValue(newText);
 		Text = newValue.ToString();
 
@@ -74,10 +75,12 @@ public partial class SettingLineEdit : LineEdit, ISettingUiWrapper
 
 	private Variant FormatedValue(string newText)
 	{
-		if (!newText.IsValidFloat())
-			return 0;
+		newText = newText.Replace(',', '.');
 
-		float floatVal = newText.ToFloat();
+		if (!float.TryParse(newText, System.Globalization.NumberStyles.Float,
+			System.Globalization.CultureInfo.InvariantCulture,
+			out float floatVal))
+			return 0;
 
 		if (!_allowNegatives)
 			floatVal = Mathf.Max(0f, floatVal);
