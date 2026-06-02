@@ -29,13 +29,15 @@ public partial class UserSettingsServer : Node
     /// </summary>
 	public void Abort()
 	{
-        HasBeenModified = false;
-        
 		if (!FileAccess.FileExists(SettingsFilePath))
+        {
+            HasBeenModified = false;
 			return;
+        }
 
 		Config.Load(SettingsFilePath);
         Load();
+        HasBeenModified = false;
 	}
 
     /// <summary>
