@@ -54,7 +54,7 @@ public abstract partial class UserSetting : Node
 
         UserSettingsServer.Instance.HasBeenModified = true;
 
-        EmitSignal(SignalName.Changed, sender, value);
+        EmitSignal(SignalName.Changed, sender, effectiveValue);
         
         return processed;
     }
