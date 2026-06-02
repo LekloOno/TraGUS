@@ -52,6 +52,8 @@ public abstract partial class UserSetting : Node
             Serialized(Value)
         );
 
+        UserSettingsServer.Instance.HasBeenModified = true;
+
         EmitSignal(SignalName.Changed, sender, value);
         
         return processed;

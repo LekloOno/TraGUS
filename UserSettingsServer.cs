@@ -26,6 +26,11 @@ public partial class UserSettingsServer : Node
     /// The preloaded default config file.
     /// </summary>
 	public ConfigFile DefaultConfig {get; private set;}
+    /// <summary>
+    /// True if there's an unsaved modified instance of the user's settings.
+    /// Typically used to show a warning message when leaving without saving settings.
+    /// </summary>
+    public bool HasBeenModified {get; set;} = false;
 
     /// <summary>
     /// The purpose of this hashmap is so that we can easily load from .ini config file. <br/>

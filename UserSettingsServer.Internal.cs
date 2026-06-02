@@ -173,6 +173,11 @@ public partial class UserSettingsServer : Node
 	public static bool Reset(UserSetting setting)
 	{
 		var value = Instance.DefaultConfig.GetValue(setting.Section, setting.Key);
-		return setting.TryUpdateValue(Instance, value, out _);
+		bool reseted = setting.TryUpdateValue(Instance, value, out _);
+
+		if (reseted)
+			Instance.HasBeenModified = true;
+		
+		return reseted;
 	}
 }

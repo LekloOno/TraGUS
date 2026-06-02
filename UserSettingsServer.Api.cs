@@ -21,6 +21,7 @@ public partial class UserSettingsServer : Node
     public void Save()
 	{
 		Config.Save(SettingsFilePath);
+        HasBeenModified = false;
 	}
 
     /// <summary>
@@ -28,6 +29,8 @@ public partial class UserSettingsServer : Node
     /// </summary>
 	public void Abort()
 	{
+        HasBeenModified = false;
+        
 		if (!FileAccess.FileExists(SettingsFilePath))
 			return;
 
