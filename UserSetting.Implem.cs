@@ -36,6 +36,11 @@ public abstract partial class UserSetting : Node
     // =================================================
 
     /// <summary>
+    /// Initialize the singleton instance of the implementor.
+    /// </summary>
+    protected abstract void SetTypedInstance();
+
+    /// <summary>
     /// A value to be used if the value can't be initialized from .ini config files.
     /// You can leave it as is, or specify a fallback behavior if needed.
     /// </summary>

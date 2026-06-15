@@ -9,11 +9,6 @@ namespace TraGUS;
 public abstract partial class UserSetting : Node
 {
     /// <summary>
-    /// The autoload Instance of this setting.
-    /// </summary>
-    public static UserSetting Instance {get; private set;}
-
-    /// <summary>
     /// The current value of this setting.
     /// </summary>
     public Variant Value {get; private set;}

@@ -1,5 +1,6 @@
 using Godot;
 using TraGUS;
+using TraGUS.DotNet;
 
 /// <summary>
 /// This is an example of how to implement UserSetting.
@@ -7,7 +8,7 @@ using TraGUS;
 /// 
 /// To work properly, you must add it as an autoload, and make sure it loads after the <see cref="UserSettingsServer"/> (that is, it is lower in the autoloads list).
 /// </summary>
-public partial class ExampleResolutionUserSetting : UserSetting
+public partial class ExampleResolutionUserSetting : UserSetting<ExampleResolutionUserSetting>
 {
     public override string Section => "video";
     public override string Key => "resolution";

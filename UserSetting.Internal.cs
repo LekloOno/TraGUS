@@ -14,7 +14,7 @@ public abstract partial class UserSetting : Node
 	// =================================================
 	public override sealed void _EnterTree()
 	{
-		Instance = this;
+		SetTypedInstance();
 
 		PreInitialize();
 
