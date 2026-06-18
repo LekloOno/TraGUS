@@ -57,7 +57,8 @@ public partial class SettingLineEdit : LineEdit, ISettingUiWrapper
 		if (sender == this)
 			return;
 
-		Text = value.ToString();
+		float rounded = (float) Math.Round((decimal)(float)value, _decimals);
+		Text = rounded.ToString();
 	}
 
 	private void OnTextChanged(string newText)
